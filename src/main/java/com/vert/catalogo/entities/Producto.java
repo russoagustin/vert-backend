@@ -27,6 +27,8 @@ public class Producto {
 
     private String nombre;
     private BigDecimal precio;
+
+    private BigDecimal precioDescuento;
     private String descripcion;
     private String imgUrl;
 

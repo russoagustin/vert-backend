@@ -43,8 +43,7 @@ public class DefaultCategoriaService implements CategoriaService {
     @Override
     public void modificarCategoria(Categoria cat) {
         Categoria existingCat = buscarPorId(cat.getId());
-        existingCat.setNombre(cat.getNombre());
-        repository.save(existingCat);
+        repository.modificarCategoria(cat.getId(), cat.getNombre());
     }
 
 }
