@@ -1,5 +1,7 @@
 package com.vert.catalogo.services.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.vert.catalogo.entities.Categoria;
@@ -36,14 +38,19 @@ public class DefaultCategoriaService implements CategoriaService {
 
     @Override
     public void borrarCategoria(Categoria cat) {
-        Categoria existingCat = buscarPorId(cat.getId());
-        repository.delete(existingCat);
+        buscarPorId(cat.getId());
+        repository.borrarCategoria(cat.getId());
     }
 
     @Override
     public void modificarCategoria(Categoria cat) {
-        Categoria existingCat = buscarPorId(cat.getId());
+        buscarPorId(cat.getId());
         repository.modificarCategoria(cat.getId(), cat.getNombre());
+    }
+
+    @Override
+    public List<Categoria> listarCategorias() {
+        return repository.findAll();
     }
 
 }

@@ -14,5 +14,8 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
 	@Procedure(procedureName = "modificar_categoria")
 	void modificarCategoria(@Param("p_idCategoria") Integer id, @Param("p_nombre") String nombre);
 
+	@Procedure(procedureName = "borrar_categoria")
+	void borrarCategoria(@Param("p_idCategoria") Integer id);
+
 	java.util.Optional<Categoria> findByNombre(String nombre);
 }

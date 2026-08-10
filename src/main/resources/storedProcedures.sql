@@ -102,3 +102,32 @@ sp_modificar: BEGIN
 END$$
 
 DELIMITER ;
+
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `borrar_categoria`$$
+
+CREATE PROCEDURE `borrar_categoria`(
+    IN p_idCategoria INT
+)
+BEGIN
+    DECLARE v_productos_count INT DEFAULT 0;
+
+    -- Validar si la categoría está relacionada con productos
+    SELECT COUNT(*) INTO v_productos_count
+    FROM Productos
+    WHERE idCategoria = p_idCategoria;
+
+    IF v_productos_count > 0 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: No se puede borrar la categoría porque tiene productos asociados.';
+    END IF;
+
+    -- Si no tiene productos, borrar
+    DELETE FROM Categorias
+    WHERE idCategoria = p_idCategoria;
+
+END$$
+
+DELIMITER ;

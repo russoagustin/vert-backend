@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/categorias")
@@ -27,6 +28,12 @@ public class CategoriaController {
                 .buildAndExpand(id)
                 .toUri();
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CategoriaDto>> listarCategorias() {
+        List<Categoria> categorias = categoriaService.listarCategorias();
+        return ResponseEntity.ok(categorias.stream().map(CategoriaDto::fromEntity).toList());
     }
 
     @GetMapping("/{id}")
