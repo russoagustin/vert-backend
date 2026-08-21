@@ -1,9 +1,11 @@
 package com.vert.catalogo.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.vert.catalogo.dto.CategoriaDto;
 import com.vert.catalogo.entities.Categoria;
 import com.vert.catalogo.repositories.CategoriaRepository;
 import com.vert.catalogo.services.interfaces.CategoriaService;
@@ -20,37 +22,55 @@ public class DefaultCategoriaService implements CategoriaService {
     }
 
     @Override
-    public Integer crearCategoria(Categoria cat) {
-        return repository.nuevaCategoria(cat.getNombre());
+    public List<CategoriaDto> listarCategorias() {
+        return this.repository.findAll().stream().map(CategoriaDto::fromEntity).toList();
     }
 
     @Override
-    public Categoria buscarPorId(Integer id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Categoría no encontrada con id: " + id));
+    public Integer crearCategoria(CategoriaDto cat) {
+        return this.repository.nuevaCategoria(cat.nombre());
     }
 
     @Override
-    public Categoria buscarCategoria(String nombre) {
-        return repository.findByNombre(nombre)
-                .orElseThrow(() -> new NotFoundException("Categoría no encontrada con nombre: " + nombre));
+    public CategoriaDto buscarPorId(Integer id) {
+        Optional<Categoria> cat = this.repository.findById(id);
+
+        if (!cat.isPresent()) {
+            throw new NotFoundException("Categoria no encontrada");
+        }
+
+        return CategoriaDto.fromEntity(cat.get());
     }
 
     @Override
-    public void borrarCategoria(Categoria cat) {
-        buscarPorId(cat.getId());
-        repository.borrarCategoria(cat.getId());
+    public CategoriaDto buscarCategoria(String nombre) {
+        Optional<Categoria> cat = this.repository.findByNombre(nombre);
+
+        if (!cat.isPresent()) {
+            throw new NotFoundException("Categoria no encontrada");
+        }
+
+        return CategoriaDto.fromEntity(cat.get());
     }
 
     @Override
-    public void modificarCategoria(Categoria cat) {
-        buscarPorId(cat.getId());
-        repository.modificarCategoria(cat.getId(), cat.getNombre());
+    public void borrarCategoria(Integer id) {
+        Categoria cat = this.repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Categoria no encontrada"));
+
+        this.repository.delete(cat);
     }
 
     @Override
-    public List<Categoria> listarCategorias() {
-        return repository.findAll();
+    public void modificarCategoria(Integer id, CategoriaDto cat) {
+        this.repository.findById(id).orElseThrow(() -> new NotFoundException("Categoria no encontrada"));
+        this.repository.modificarCategoria(id, cat.nombre());
+    }
+
+    @Override
+    public void cambiarOrdenCategoria(Integer id, Integer orden) {
+        this.repository.findById(id).orElseThrow(() -> new NotFoundException("Categoria no encontrada"));
+        this.repository.cambiarOrdenCategoria(id, orden);
     }
 
 }

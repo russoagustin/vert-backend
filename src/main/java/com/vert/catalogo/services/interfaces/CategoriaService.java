@@ -1,20 +1,22 @@
 package com.vert.catalogo.services.interfaces;
 
-import com.vert.catalogo.entities.Categoria;
+import com.vert.catalogo.dto.CategoriaDto;
 
 import java.util.List;
 
 public interface CategoriaService {
 
-    List<Categoria> listarCategorias();
+    List<CategoriaDto> listarCategorias();
 
-    Integer crearCategoria(Categoria cat);
+    Integer crearCategoria(CategoriaDto cat);
 
-    Categoria buscarPorId(Integer id);
+    CategoriaDto buscarPorId(Integer id);
 
-    Categoria buscarCategoria(String nombre);
+    CategoriaDto buscarCategoria(String nombre);
 
-    void borrarCategoria(Categoria cat);
+    void borrarCategoria(Integer id);
 
-    void modificarCategoria(Categoria cat);
+    void modificarCategoria(Integer id, CategoriaDto cat);
+
+    void cambiarOrdenCategoria(Integer id, Integer orden);
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -15,15 +16,19 @@ import lombok.Setter;
 @Entity
 @Table(name = "Productos")
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 public class Producto {
     @Id
     @Column(name = "idProducto")
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "idCategoria", nullable = false )
-    private Categoria categoria;
+    @JoinColumns({
+            @JoinColumn(name = "idCategoria", referencedColumnName = "idCategoria", nullable = false),
+            @JoinColumn(name = "idSubCategoria", referencedColumnName = "idSubCategoria", nullable = false)
+    })
+    private SubCategoria subCategoria;
 
     private String nombre;
     private BigDecimal precio;
@@ -31,5 +36,6 @@ public class Producto {
     private BigDecimal precioDescuento;
     private String descripcion;
     private String imgUrl;
+    private Integer cantidad;
 
 }

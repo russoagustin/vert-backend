@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `vertDB`.`Productos` (
   `idCategoria` INT NOT NULL,
   `nombre` VARCHAR(45) NOT NULL,
   `precio` DECIMAL(6,2) NOT NULL,
+  `precioDescuento` DECIMAL(6,2) NOT NULL,
   `descripcion` VARCHAR(255) NULL,
   `imgUrl` VARCHAR(255) NULL,
   PRIMARY KEY (`idProducto`),

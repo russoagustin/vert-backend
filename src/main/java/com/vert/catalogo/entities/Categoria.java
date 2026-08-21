@@ -11,7 +11,8 @@ import lombok.Setter;
 @Entity
 @Table(name = "Categorias")
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 public class Categoria {
 
     @Id
@@ -19,4 +20,5 @@ public class Categoria {
     private Integer id;
 
     private String nombre;
+    private Integer orden;
 }
