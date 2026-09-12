@@ -1,73 +1,150 @@
--- MySQL Workbench Forward Engineering
+ -- MySQL Workbench Forward Engineering
+
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
--- -----------------------------------------------------
--- Schema vertDB
--- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `vertDB` ;
 
 -- -----------------------------------------------------
--- Schema vertDB
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `vertDB` ;
-USE `vertDB` ;
+
+-- Schema Vert
 
 -- -----------------------------------------------------
--- Table `vertDB`.`Categorias`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `vertDB`.`Categorias` ;
 
-CREATE TABLE IF NOT EXISTS `vertDB`.`Categorias` (
-  `idCategoria` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`idCategoria`))
+DROP SCHEMA IF EXISTS `Vert` ;
+
+
+-- -----------------------------------------------------
+
+-- Schema Vert
+
+-- -----------------------------------------------------
+
+CREATE SCHEMA IF NOT EXISTS `Vert` DEFAULT CHARACTER SET utf8 ;
+
+USE `Vert` ;
+
+
+-- -----------------------------------------------------
+
+-- Table `Vert`.`Categorias`
+
+-- -----------------------------------------------------
+
+DROP TABLE IF EXISTS `Vert`.`Categorias` ;
+
+
+CREATE TABLE IF NOT EXISTS `Vert`.`Categorias` (
+
+`idCategoria` INT NOT NULL AUTO_INCREMENT,
+
+`nombre` VARCHAR(30) NOT NULL,
+
+`orden` SMALLINT NOT NULL,
+
+PRIMARY KEY (`idCategoria`))
+
 ENGINE = InnoDB;
 
-CREATE UNIQUE INDEX `nombre_UNIQUE` ON `vertDB`.`Categorias` (`nombre` ASC) VISIBLE;
+
+CREATE UNIQUE INDEX `nombre_UNIQUE` ON `Vert`.`Categorias` (`nombre` ASC) VISIBLE;
+
 
 
 -- -----------------------------------------------------
--- Table `vertDB`.`Productos`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `vertDB`.`Productos` ;
 
-CREATE TABLE IF NOT EXISTS `vertDB`.`Productos` (
-  `idProducto` INT NOT NULL AUTO_INCREMENT,
-  `idCategoria` INT NOT NULL,
-  `nombre` VARCHAR(45) NOT NULL,
-  `precio` DECIMAL(6,2) NOT NULL,
-  `precioDescuento` DECIMAL(6,2) NOT NULL,
-  `descripcion` VARCHAR(255) NULL,
-  `imgUrl` VARCHAR(255) NULL,
-  PRIMARY KEY (`idProducto`),
-  CONSTRAINT `fk_Productos_Categorias`
-    FOREIGN KEY (`idCategoria`)
-    REFERENCES `vertDB`.`Categorias` (`idCategoria`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+-- Table `Vert`.`SubCategorias`
+
+-- -----------------------------------------------------
+
+DROP TABLE IF EXISTS `Vert`.`SubCategorias` ;
+
+
+CREATE TABLE IF NOT EXISTS `Vert`.`SubCategorias` (
+
+`idSubCategoria` INT NOT NULL,
+
+`idCategoria` INT NOT NULL,
+
+`nombre` VARCHAR(30) NOT NULL,
+
+`orden` SMALLINT NOT NULL,
+
+PRIMARY KEY (`idSubCategoria`, `idCategoria`),
+
+CONSTRAINT `fk_SubCategorias_Categorias`
+
+FOREIGN KEY (`idCategoria`)
+
+REFERENCES `Vert`.`Categorias` (`idCategoria`)
+
+ON DELETE NO ACTION
+
+ON UPDATE NO ACTION)
+
 ENGINE = InnoDB;
 
-CREATE INDEX `fk_Productos_Categorias_idx` ON `vertDB`.`Productos` (`idCategoria` ASC) VISIBLE;
+
+CREATE INDEX `fk_SubCategorias_Categorias_idx` ON `Vert`.`SubCategorias` (`idCategoria` ASC) VISIBLE;
+
+
+CREATE UNIQUE INDEX `uq_nombre_idCategoria` ON `Vert`.`SubCategorias` (`idCategoria` ASC, `nombre` ASC) VISIBLE;
+
 
 
 -- -----------------------------------------------------
--- Table `vertDB`.`Usuarios`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `vertDB`.`Usuarios` ;
 
-CREATE TABLE IF NOT EXISTS `vertDB`.`Usuarios` (
-  `idUsuarios` INT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(45) NOT NULL,
-  `password` CHAR(60) NOT NULL,
-  PRIMARY KEY (`idUsuarios`))
+-- Table `Vert`.`Productos`
+
+-- -----------------------------------------------------
+
+DROP TABLE IF EXISTS `Vert`.`Productos` ;
+
+
+CREATE TABLE IF NOT EXISTS `Vert`.`Productos` (
+
+`idProducto` INT NOT NULL,
+
+`idSubCategoria` INT NOT NULL,
+
+`idCategoria` INT NOT NULL,
+
+`nombre` VARCHAR(30) NOT NULL,
+
+`precio` DECIMAL(9,2) NOT NULL,
+
+`imgUrl` VARCHAR(300) NOT NULL,
+
+`precioDescuento` DECIMAL(9,2) NULL,
+
+`descripcion` VARCHAR(255) NULL,
+
+`cantidad` TINYINT NULL,
+
+PRIMARY KEY (`idProducto`),
+
+CONSTRAINT `fk_Productos_SubCategorias1`
+
+FOREIGN KEY (`idSubCategoria` , `idCategoria`)
+
+REFERENCES `Vert`.`SubCategorias` (`idSubCategoria` , `idCategoria`)
+
+ON DELETE NO ACTION
+
+ON UPDATE NO ACTION)
+
 ENGINE = InnoDB;
 
-CREATE UNIQUE INDEX `username_UNIQUE` ON `vertDB`.`Usuarios` (`username` ASC) VISIBLE;
+
+CREATE INDEX `fk_Productos_SubCategorias1_idx` ON `Vert`.`Productos` (`idSubCategoria` ASC, `idCategoria` ASC) VISIBLE;
+
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
+
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS; 
