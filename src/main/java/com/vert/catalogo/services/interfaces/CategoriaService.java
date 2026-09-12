@@ -1,6 +1,7 @@
 package com.vert.catalogo.services.interfaces;
 
 import com.vert.catalogo.dto.CategoriaDto;
+import com.vert.catalogo.dto.CategoriaOrdenDto;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface CategoriaService {
     void modificarCategoria(Integer id, CategoriaDto cat);
 
     void cambiarOrdenCategoria(Integer id, Integer orden);
+
+    void cambiarOrdenCategorias(List<CategoriaOrdenDto> categorias);
 }

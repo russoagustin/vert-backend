@@ -22,6 +22,14 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponseDto<String>> handleValidationException(ValidationException ex) {
+
+        return new ResponseEntity<>(
+                new ErrorResponseDto<String>(ErrorCode.VALIDATION_ERROR, ex.getMessage()),
+                HttpStatus.BAD_REQUEST);
+    }
+
     // Capturamos las excepciones relacionadas con la base de datos
     @ExceptionHandler({ JpaSystemException.class, DataAccessException.class })
     public ResponseEntity<ErrorResponseDto<String>> handleDatabaseExceptions(Exception ex) {

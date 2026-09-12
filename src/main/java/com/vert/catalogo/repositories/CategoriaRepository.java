@@ -1,5 +1,8 @@
 package com.vert.catalogo.repositories;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
@@ -51,5 +54,7 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
 	@Procedure(procedureName = "cambiar_orden_categoria")
 	void cambiarOrdenCategoria(@Param("p_idCategoria") Integer id, @Param("p_orden") Integer orden);
 
-	java.util.Optional<Categoria> findByNombre(String nombre);
+	Optional<Categoria> findByNombre(String nombre);
+
+	List<Categoria> findAllByOrderByOrdenAsc();
 }

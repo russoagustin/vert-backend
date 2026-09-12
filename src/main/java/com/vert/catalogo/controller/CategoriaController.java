@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.vert.catalogo.dto.CategoriaDto;
+import com.vert.catalogo.dto.CategoriaOrdenDto;
 import com.vert.catalogo.services.interfaces.CategoriaService;
 
 @RestController
@@ -68,6 +69,12 @@ public class CategoriaController {
     @PatchMapping("/{id}/orden")
     public ResponseEntity<Void> cambiarOrdenCategoria(@PathVariable Integer id, @RequestBody CategoriaDto categoriaDto) {
         categoriaService.cambiarOrdenCategoria(id, categoriaDto.orden());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/orden")
+    public ResponseEntity<Void> cambiarOrdenCategorias(@RequestBody List<CategoriaOrdenDto> categorias) {
+        categoriaService.cambiarOrdenCategorias(categorias);
         return ResponseEntity.noContent().build();
     }
 
