@@ -1,0 +1,570 @@
+{
+	"info": {
+		"_postman_id": "vert-catalogo-collection-id",
+		"name": "Vert Catálogo API",
+		"description": "Colección completa para pruebas de los endpoints de Categorías y SubCategorías del backend Vert.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Categorías",
+			"item": [
+				{
+					"name": "Listar Categorías",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categorias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias"
+							]
+						},
+						"description": "Obtiene la lista de todas las categorías ordenadas ascendentemente por el campo 'orden'."
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Categoría por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categorias/{{categoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"{{categoria_id}}"
+							]
+						},
+						"description": "Retorna la categoría correspondiente al ID especificado."
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Categoría por Nombre",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categorias/buscar?nombre=Bebidas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"buscar"
+							],
+							"query": [
+								{
+									"key": "nombre",
+									"value": "Bebidas"
+								}
+							]
+						},
+						"description": "Busca una categoría exacta por su nombre."
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Categoría",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Bebidas\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categorias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias"
+							]
+						},
+						"description": "Crea una nueva categoría utilizando el procedimiento almacenado. Retorna 201 Created con el header Location."
+					},
+					"response": []
+				},
+				{
+					"name": "Modificar Categoría",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Bebidas Modificadas\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categorias/{{categoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"{{categoria_id}}"
+							]
+						},
+						"description": "Modifica el nombre de una categoría existente. Retorna 204 No Content."
+					},
+					"response": []
+				},
+				{
+					"name": "Cambiar Orden Categoría (Individual)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orden\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categorias/{{categoria_id}}/orden",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"{{categoria_id}}",
+								"orden"
+							]
+						},
+						"description": "Modifica el orden de una única categoría desplazando a las demás mediante el procedimiento almacenado. Retorna 204 No Content."
+					},
+					"response": []
+				},
+				{
+					"name": "Cambiar Orden Categorías (Lote)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"id\": 1,\n        \"orden\": 2\n    },\n    {\n        \"id\": 2,\n        \"orden\": 1\n    }\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/categorias/orden",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"orden"
+							]
+						},
+						"description": "Modifica y normaliza los órdenes de todas las categorías de la tabla. Requiere enviar la totalidad de las categorías. Retorna 204 No Content."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Categoría",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categorias/{{categoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"categorias",
+								"{{categoria_id}}"
+							]
+						},
+						"description": "Elimina la categoría con el ID indicado. Retorna 204 No Content."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SubCategorías",
+			"item": [
+				{
+					"name": "Listar Todas las SubCategorías",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias"
+							]
+						},
+						"description": "Obtiene la lista de todas las subcategorías registradas, ordenadas por categoría y orden."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar SubCategorías por Categoría (Query Param)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias?idCategoria={{categoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias"
+							],
+							"query": [
+								{
+									"key": "idCategoria",
+									"value": "{{categoria_id}}"
+								}
+							]
+						},
+						"description": "Obtiene las subcategorías que pertenecen a la categoría dada, ordenadas por orden ascendente."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar SubCategorías por Categoría (Path Variable)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/categoria/{{categoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"categoria",
+								"{{categoria_id}}"
+							]
+						},
+						"description": "Ruta REST alternativa para listar subcategorías de una categoría específica."
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar SubCategoría por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/{{subcategoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"{{subcategoria_id}}"
+							]
+						},
+						"description": "Busca una subcategoría por su ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar SubCategoría por Categoría y ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/categoria/{{categoria_id}}/{{subcategoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"categoria",
+								"{{categoria_id}}",
+								"{{subcategoria_id}}"
+							]
+						},
+						"description": "Busca una subcategoría verificando que pertenezca a la categoría indicada."
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar SubCategoría por Nombre y Categoría",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/buscar?idCategoria={{categoria_id}}&nombre=Gaseosas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"buscar"
+							],
+							"query": [
+								{
+									"key": "idCategoria",
+									"value": "{{categoria_id}}"
+								},
+								{
+									"key": "nombre",
+									"value": "Gaseosas"
+								}
+							]
+						},
+						"description": "Busca una subcategoría por su nombre dentro de la categoría padre."
+					},
+					"response": []
+				},
+				{
+					"name": "Crear SubCategoría",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idCategoria\": {{categoria_id}},\n    \"nombre\": \"Gaseosas\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias"
+							]
+						},
+						"description": "Crea una nueva subcategoría vinculada a una categoría existente. Retorna 201 Created con Location."
+					},
+					"response": []
+				},
+				{
+					"name": "Modificar SubCategoría",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idCategoria\": {{categoria_id}},\n    \"nombre\": \"Gaseosas y Aguas\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/{{subcategoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"{{subcategoria_id}}"
+							]
+						},
+						"description": "Modifica el nombre de una subcategoría perteneciente a una categoría. Retorna 204 No Content."
+					},
+					"response": []
+				},
+				{
+					"name": "Cambiar Orden SubCategoría (Individual)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idCategoria\": {{categoria_id}},\n    \"orden\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/{{subcategoria_id}}/orden",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"{{subcategoria_id}}",
+								"orden"
+							]
+						},
+						"description": "Modifica el orden de una única subcategoría dentro de su categoría mediante el procedimiento almacenado. Retorna 204 No Content."
+					},
+					"response": []
+				},
+				{
+					"name": "Cambiar Orden SubCategorías (Lote - Query Param)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"id\": 1,\n        \"orden\": 2\n    },\n    {\n        \"id\": 2,\n        \"orden\": 1\n    }\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/orden?idCategoria={{categoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"orden"
+							],
+							"query": [
+								{
+									"key": "idCategoria",
+									"value": "{{categoria_id}}"
+								}
+							]
+						},
+						"description": "Reordena en lote SIEMPRE las subcategorías pertenecientes a la categoría dada especificada en el query param idCategoria. Valida total de elementos registrados. Retorna 204 No Content."
+					},
+					"response": []
+				},
+				{
+					"name": "Cambiar Orden SubCategorías (Lote - Path Variable)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"id\": 1,\n        \"orden\": 2\n    },\n    {\n        \"id\": 2,\n        \"orden\": 1\n    }\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/categoria/{{categoria_id}}/orden",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"categoria",
+								"{{categoria_id}}",
+								"orden"
+							]
+						},
+						"description": "Ruta alternativa para reordenar en lote las subcategorías pertenecientes a la categoría especificada en el path variable idCategoria. Retorna 204 No Content."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar SubCategoría",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/{{subcategoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"{{subcategoria_id}}"
+							]
+						},
+						"description": "Elimina la subcategoría con el ID especificado. Retorna 204 No Content."
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar SubCategoría por Categoría",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/subcategorias/categoria/{{categoria_id}}/{{subcategoria_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subcategorias",
+								"categoria",
+								"{{categoria_id}}",
+								"{{subcategoria_id}}"
+							]
+						},
+						"description": "Elimina la subcategoría validando su pertenencia a la categoría dada. Retorna 204 No Content."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "categoria_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "subcategoria_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
