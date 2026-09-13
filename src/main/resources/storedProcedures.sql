@@ -439,3 +439,217 @@ proc_principal: BEGIN
 END //
 
 DELIMITER ;
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS nuevo_producto//
+
+CREATE PROCEDURE nuevo_producto(
+    IN p_idCategoria INT,
+    IN p_idSubCategoria INT,
+    IN p_nombre VARCHAR(30),
+    IN p_precio DECIMAL(9,2),
+    IN p_precioDescuento DECIMAL(9,2),
+    IN p_descripcion VARCHAR(255),
+    IN p_imgUrl VARCHAR(300),
+    IN p_cantidad TINYINT,
+    OUT p_idProducto INT
+)
+BEGIN
+    DECLARE v_nombre_limpio VARCHAR(30);
+    DECLARE v_existe_subcategoria INT;
+    DECLARE v_existe_nombre INT;
+    DECLARE v_nuevo_id INT;
+    DECLARE v_lock_adquirido INT;
+
+    -- 1. Intentar adquirir un candado (espera máximo 5 segundos)
+    SELECT GET_LOCK('lock_creacion_producto', 5) INTO v_lock_adquirido;
+
+    IF v_lock_adquirido = 0 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: El sistema está muy ocupado procesando otros productos. Intente nuevamente en unos segundos.';
+    END IF;
+
+    BEGIN
+        DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            DO RELEASE_LOCK('lock_creacion_producto');
+            RESIGNAL;
+        END;
+
+        -- 2. Validar IDs de categoría y subcategoría
+        IF p_idCategoria IS NULL THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Error: El ID de la categoría no puede ser nulo.';
+        END IF;
+
+        IF p_idSubCategoria IS NULL THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Error: El ID de la subcategoría no puede ser nulo.';
+        END IF;
+
+        -- Validar que la subcategoría pertenezca a la categoría
+        SELECT COUNT(*) INTO v_existe_subcategoria
+        FROM Vert.SubCategorias
+        WHERE idSubCategoria = p_idSubCategoria AND idCategoria = p_idCategoria;
+
+        IF v_existe_subcategoria = 0 THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Error: La subcategoría especificada no existe para la categoría indicada.';
+        END IF;
+
+        -- 3. Validar nombre
+        IF p_nombre IS NULL OR TRIM(p_nombre) = '' THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Error: El nombre del producto no puede ser nulo, vacío ni estar compuesto solo por espacios.';
+        END IF;
+
+        SET v_nombre_limpio = TRIM(p_nombre);
+
+        -- 4. Validar precio
+        IF p_precio IS NULL OR p_precio < 0 THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Error: El precio del producto debe ser mayor o igual a 0.';
+        END IF;
+
+        -- Validar precio de descuento si existe
+        IF p_precioDescuento IS NOT NULL AND (p_precioDescuento < 0 OR p_precioDescuento > p_precio) THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Error: El precio de descuento no puede ser negativo ni mayor al precio regular.';
+        END IF;
+
+        -- 5. Validar imagen
+        IF p_imgUrl IS NULL OR TRIM(p_imgUrl) = '' THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Error: La URL de la imagen del producto no puede ser nula ni vacía.';
+        END IF;
+
+        -- 6. Validar duplicados de nombre
+        SELECT COUNT(*) INTO v_existe_nombre 
+        FROM Vert.Productos 
+        WHERE nombre = v_nombre_limpio;
+
+        IF v_existe_nombre > 0 THEN
+            SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT = 'Error: El nombre del producto ya se encuentra en uso.';
+        END IF;
+
+        -- 7. Cálculo de nuevo ID
+        SELECT IFNULL(MAX(idProducto), 0) + 1 INTO v_nuevo_id 
+        FROM Vert.Productos;
+
+        -- 8. Inserción
+        INSERT INTO Vert.Productos (idProducto, idSubCategoria, idCategoria, nombre, precio, imgUrl, precioDescuento, descripcion, cantidad)
+        VALUES (v_nuevo_id, p_idSubCategoria, p_idCategoria, v_nombre_limpio, p_precio, TRIM(p_imgUrl), p_precioDescuento, p_descripcion, p_cantidad);
+
+        SET p_idProducto = v_nuevo_id;
+
+        -- 9. Liberar el candado tras el éxito
+        DO RELEASE_LOCK('lock_creacion_producto');
+    END;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS modificar_producto//
+
+CREATE PROCEDURE modificar_producto(
+    IN p_idProducto INT,
+    IN p_idCategoria INT,
+    IN p_idSubCategoria INT,
+    IN p_nombre VARCHAR(30),
+    IN p_precio DECIMAL(9,2),
+    IN p_precioDescuento DECIMAL(9,2),
+    IN p_descripcion VARCHAR(255),
+    IN p_imgUrl VARCHAR(300),
+    IN p_cantidad TINYINT
+)
+proc_principal: BEGIN
+    DECLARE v_nombre_limpio VARCHAR(30);
+    DECLARE v_existe_producto INT;
+    DECLARE v_existe_subcategoria INT;
+    DECLARE v_existe_duplicado INT;
+
+    -- 1. Validar ID producto
+    IF p_idProducto IS NULL THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: El ID del producto no puede ser nulo.';
+    END IF;
+
+    -- 2. Verificar existencia del producto
+    SELECT COUNT(*) INTO v_existe_producto
+    FROM Vert.Productos
+    WHERE idProducto = p_idProducto;
+
+    IF v_existe_producto = 0 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: El producto que intenta modificar no existe.';
+    END IF;
+
+    -- 3. Validar categoría y subcategoría
+    IF p_idCategoria IS NULL OR p_idSubCategoria IS NULL THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: El ID de la categoría y subcategoría no pueden ser nulos.';
+    END IF;
+
+    SELECT COUNT(*) INTO v_existe_subcategoria
+    FROM Vert.SubCategorias
+    WHERE idSubCategoria = p_idSubCategoria AND idCategoria = p_idCategoria;
+
+    IF v_existe_subcategoria = 0 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: La subcategoría especificada no existe para la categoría indicada.';
+    END IF;
+
+    -- 4. Validar nombre
+    IF p_nombre IS NULL OR TRIM(p_nombre) = '' THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: El nombre del producto no puede ser nulo, vacío ni estar compuesto solo por espacios.';
+    END IF;
+
+    SET v_nombre_limpio = TRIM(p_nombre);
+
+    -- 5. Validar duplicados de nombre en otros productos
+    SELECT COUNT(*) INTO v_existe_duplicado
+    FROM Vert.Productos
+    WHERE nombre = v_nombre_limpio AND idProducto != p_idProducto;
+
+    IF v_existe_duplicado > 0 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: El nuevo nombre ya se encuentra en uso por otro producto.';
+    END IF;
+
+    -- 6. Validar precio
+    IF p_precio IS NULL OR p_precio < 0 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: El precio del producto debe ser mayor o igual a 0.';
+    END IF;
+
+    IF p_precioDescuento IS NOT NULL AND (p_precioDescuento < 0 OR p_precioDescuento > p_precio) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: El precio de descuento no puede ser negativo ni mayor al precio regular.';
+    END IF;
+
+    -- 7. Validar imgUrl
+    IF p_imgUrl IS NULL OR TRIM(p_imgUrl) = '' THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error: La URL de la imagen no puede ser nula ni vacía.';
+    END IF;
+
+    -- 8. Actualizar producto
+    UPDATE Vert.Productos
+    SET idCategoria = p_idCategoria,
+        idSubCategoria = p_idSubCategoria,
+        nombre = v_nombre_limpio,
+        precio = p_precio,
+        precioDescuento = p_precioDescuento,
+        descripcion = p_descripcion,
+        imgUrl = TRIM(p_imgUrl),
+        cantidad = p_cantidad
+    WHERE idProducto = p_idProducto;
+
+END //
+
+DELIMITER ;

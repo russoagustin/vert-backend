@@ -137,6 +137,21 @@ Para ejecutar la suite completa de pruebas unitarias y de integración:
 
 ---
 
+### 📦 Productos (`/api/productos`)
+
+| Método | Endpoint | Descripción | Body / Partes |
+| :--- | :--- | :--- | :--- |
+| **GET** | `/api/productos` | Lista todos los productos (soporta `?idCategoria=...` e `?idSubCategoria=...`). | — |
+| **GET** | `/api/productos/categoria/{idCategoria}` | Lista productos pertenecientes a una categoría. | — |
+| **GET** | `/api/productos/categoria/{idCategoria}/subcategoria/{idSubCategoria}` | Lista productos pertenecientes a una subcategoría específica. | — |
+| **GET** | `/api/productos/{id}` | Obtiene un producto por su ID. | — |
+| **GET** | `/api/productos/buscar?nombre={nombre}` | Busca un producto por nombre exacto. | — |
+| **POST** | `/api/productos` | Crea un producto. **Obligatorio enviar imagen** como `MultipartFile`. Retorna `201 Created` + `Location`. | `multipart/form-data`:<br>• `producto` (JSON): `{"idCategoria": 1, "idSubCategoria": 1, "nombre": "Coca Cola 1.5L", "precio": 1500.00, "precioDescuento": 1200.00, "descripcion": "Gaseosa", "cantidad": 50}`<br>• `imagen` (Archivo binario) |
+| **PUT** | `/api/productos/{id}` | Modifica un producto existente. La imagen es opcional: si se envía se actualiza en Cloudflare R2; si no se envía se preserva la anterior. | `multipart/form-data`:<br>• `producto` (JSON)<br>• `imagen` (Archivo opcional)<br>*O `application/json` si no hay cambios de imagen.* |
+| **DELETE** | `/api/productos/{id}` | Elimina un producto por su ID. Retorna `204 No Content`. | — |
+
+---
+
 ## 🛡️ Manejo de Errores
 
 El backend cuenta con un manejador global de excepciones (`GlobalExceptionHandler`) que estandariza todas las respuestas de error en formato JSON:
