@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,10 +70,10 @@ class DefaultSubCategoriaServiceTest {
         when(subCategoriaRepository.findByIdAndCategoriaId(10, 1)).thenReturn(Optional.of(sub1));
         when(subCategoriaRepository.findByIdAndCategoriaId(20, 1)).thenReturn(Optional.of(sub2));
 
-        List<SubCategoriaOrdenDto> reorden = List.of(
+        List<SubCategoriaOrdenDto> reorden = new ArrayList<>(List.of(
                 new SubCategoriaOrdenDto(10, 2),
                 new SubCategoriaOrdenDto(20, 1)
-        );
+        ));
 
         subCategoriaService.cambiarOrdenSubCategorias(1, reorden);
 
@@ -85,9 +86,9 @@ class DefaultSubCategoriaServiceTest {
     void cambiarOrdenSubCategorias_CategoriaNoExiste_LanzaNotFoundException() {
         when(categoriaRepository.findById(99)).thenReturn(Optional.empty());
 
-        List<SubCategoriaOrdenDto> reorden = List.of(
+        List<SubCategoriaOrdenDto> reorden = new ArrayList<>(List.of(
                 new SubCategoriaOrdenDto(10, 1)
-        );
+        ));
 
         assertThrows(NotFoundException.class, () -> subCategoriaService.cambiarOrdenSubCategorias(99, reorden));
     }
@@ -96,10 +97,10 @@ class DefaultSubCategoriaServiceTest {
     void cambiarOrdenSubCategorias_OrdenDuplicado_LanzaValidationException() {
         when(categoriaRepository.findById(1)).thenReturn(Optional.of(categoria));
 
-        List<SubCategoriaOrdenDto> reorden = List.of(
+        List<SubCategoriaOrdenDto> reorden = new ArrayList<>(List.of(
                 new SubCategoriaOrdenDto(10, 1),
                 new SubCategoriaOrdenDto(20, 1)
-        );
+        ));
 
         assertThrows(ValidationException.class, () -> subCategoriaService.cambiarOrdenSubCategorias(1, reorden));
     }
@@ -109,10 +110,10 @@ class DefaultSubCategoriaServiceTest {
         when(categoriaRepository.findById(1)).thenReturn(Optional.of(categoria));
         when(subCategoriaRepository.countByCategoriaId(1)).thenReturn(3L);
 
-        List<SubCategoriaOrdenDto> reorden = List.of(
+        List<SubCategoriaOrdenDto> reorden = new ArrayList<>(List.of(
                 new SubCategoriaOrdenDto(10, 1),
                 new SubCategoriaOrdenDto(20, 2)
-        );
+        ));
 
         assertThrows(ValidationException.class, () -> subCategoriaService.cambiarOrdenSubCategorias(1, reorden));
     }

@@ -199,23 +199,26 @@ public class DefaultSubCategoriaService implements SubCategoriaService {
         long totalSubCategorias = this.subCategoriaRepository.countByCategoriaId(idCategoria);
         if (subcategorias.size() != totalSubCategorias) {
             throw new ValidationException(
-                    "Debe enviar el orden de todas las subcategorías de la categoría (" + totalSubCategorias + " subcategorías registradas).");
+                    "Debe enviar el orden de todas las subcategorías de la categoría (" + totalSubCategorias
+                            + " subcategorías registradas).");
         }
 
         for (SubCategoriaOrdenDto item : subcategorias) {
             SubCategoria subCat = this.subCategoriaRepository.findByIdAndCategoriaId(item.getId(), idCategoria)
-                    .orElseThrow(() -> new NotFoundException("SubCategoria no encontrada con id: " + item.getId() + " para la categoría: " + idCategoria));
+                    .orElseThrow(() -> new NotFoundException("SubCategoria no encontrada con id: " + item.getId()
+                            + " para la categoría: " + idCategoria));
             subCat.setOrden(item.getOrden());
             this.subCategoriaRepository.save(subCat);
         }
     }
 
     private void normalizarOrdenes(List<SubCategoriaOrdenDto> subcategorias) {
-        List<SubCategoriaOrdenDto> listaMutable = new ArrayList<>(subcategorias);
-        listaMutable.sort(Comparator.comparing(SubCategoriaOrdenDto::getOrden));
-        for (int i = 0; i < listaMutable.size(); i++) {
-            if (listaMutable.get(i).getOrden() != (i + 1)) {
-                listaMutable.get(i).setOrden(i + 1);
+
+        subcategorias.sort(Comparator.comparing(SubCategoriaOrdenDto::getOrden));
+        int len = subcategorias.size();
+        for (int i = 0; i < len; i++) {
+            if (subcategorias.get(i).getOrden() != (i + 1)) {
+                subcategorias.get(i).setOrden(i + 1);
             }
         }
     }

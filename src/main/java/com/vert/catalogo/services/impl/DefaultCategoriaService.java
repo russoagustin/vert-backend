@@ -95,12 +95,6 @@ public class DefaultCategoriaService implements CategoriaService {
             if (item == null) {
                 throw new ValidationException("El elemento de la lista no puede ser nulo.");
             }
-            if (item.getId() == null) {
-                throw new ValidationException("El ID de la categoría no puede ser nulo.");
-            }
-            if (item.getOrden() == null) {
-                throw new ValidationException("El orden de la categoría no puede ser nulo.");
-            }
             if (!ids.add(item.getId())) {
                 throw new ValidationException("No se permiten IDs de categoría duplicados: " + item.getId());
             }
