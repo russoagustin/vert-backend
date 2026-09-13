@@ -2,20 +2,50 @@ package com.vert.catalogo.dto;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vert.catalogo.entities.Categoria;
 import com.vert.catalogo.entities.Producto;
 import com.vert.catalogo.entities.SubCategoria;
 
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
 public record ProductoDto(
         Integer id,
+
+        @NotNull(message = "El ID de la categoría no puede ser nulo.")
         Integer idCategoria,
+
+        @NotNull(message = "El ID de la subcategoría no puede ser nulo.")
         Integer idSubCategoria,
+
+        @NotBlank(message = "El nombre del producto no puede ser nulo ni estar vacío.")
         String nombre,
+
+        @NotNull(message = "El precio del producto no puede ser nulo.")
+        @PositiveOrZero(message = "El precio del producto debe ser mayor o igual a 0.")
         BigDecimal precio,
+
+        @PositiveOrZero(message = "El precio de descuento no puede ser negativo.")
         BigDecimal precioDescuento,
+
         String descripcion,
+
         String imgUrl,
+
+        @PositiveOrZero(message = "La cantidad debe ser mayor o igual a 0.")
         Integer cantidad) {
+
+    @JsonIgnore
+    @AssertTrue(message = "El precio de descuento no puede ser mayor al precio regular.")
+    public boolean isPrecioDescuentoValido() {
+        if (precioDescuento == null || precio == null) {
+            return true;
+        }
+        return precioDescuento.compareTo(precio) <= 0;
+    }
 
     public static ProductoDto fromEntity(Producto producto) {
         if (producto == null) {

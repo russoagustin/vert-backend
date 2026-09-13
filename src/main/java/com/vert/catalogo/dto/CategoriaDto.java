@@ -1,9 +1,11 @@
 package com.vert.catalogo.dto;
 
 import com.vert.catalogo.entities.Categoria;
+import jakarta.validation.constraints.NotBlank;
 
 public record CategoriaDto(
         Integer id,
+        @NotBlank(message = "El nombre de la categoría no puede ser nulo ni estar vacío.")
         String nombre,
         Integer orden) {
 

@@ -3,6 +3,7 @@ package com.vert.catalogo.controller;
 import java.net.URI;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -62,7 +63,7 @@ public class ProductoController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> crearProducto(
-            @RequestPart("producto") ProductoDto productoDto,
+            @Valid @RequestPart("producto") ProductoDto productoDto,
             @RequestPart("imagen") MultipartFile imagen) {
         Integer newId = this.productoService.crearProducto(productoDto, imagen);
 
@@ -78,7 +79,7 @@ public class ProductoController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> modificarProductoConImagen(
             @PathVariable Integer id,
-            @RequestPart("producto") ProductoDto productoDto,
+            @Valid @RequestPart("producto") ProductoDto productoDto,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
         this.productoService.modificarProducto(id, productoDto, imagen);
         return ResponseEntity.noContent().build();
@@ -87,7 +88,7 @@ public class ProductoController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> modificarProductoSinImagen(
             @PathVariable Integer id,
-            @RequestBody ProductoDto productoDto) {
+            @Valid @RequestBody ProductoDto productoDto) {
         this.productoService.modificarProducto(id, productoDto, null);
         return ResponseEntity.noContent().build();
     }

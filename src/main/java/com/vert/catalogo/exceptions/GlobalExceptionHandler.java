@@ -4,12 +4,16 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.vert.catalogo.dto.ErrorResponseDto;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,6 +24,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new ErrorResponseDto<String>(ErrorCode.NOT_FOUND, ex.getMessage()),
                 HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponseDto<Map<String, String>>> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException ex, BindingResult result) {
+
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(err -> {
+            errors.put(err.getField(), err.getDefaultMessage());
+        });
+
+        ErrorResponseDto<Map<String, String>> errorResponse = new ErrorResponseDto<>(ErrorCode.VALIDATION_ERROR,
+                errors);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(errorResponse);
     }
 
     @ExceptionHandler(ValidationException.class)

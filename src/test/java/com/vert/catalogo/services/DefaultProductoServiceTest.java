@@ -165,15 +165,19 @@ class DefaultProductoServiceTest {
     }
 
     @Test
-    void crearProducto_PrecioDescuentoMayorQuePrecio_LanzaValidationException() {
-        MockMultipartFile imagen = new MockMultipartFile(
-                "imagen", "foto.png", "image/png", "test".getBytes());
+    void productoDto_PrecioDescuentoMayorQuePrecio_FallaValidacion() {
         ProductoDto dto = new ProductoDto(
                 null, 1, 10, "Producto Caro",
                 new BigDecimal("100.00"), new BigDecimal("150.00"), null, null, 5);
 
-        assertThrows(ValidationException.class, () -> productoService.crearProducto(dto, imagen));
-        verify(storageService, never()).uploadFile(any());
+        jakarta.validation.Validator validator = jakarta.validation.Validation
+                .buildDefaultValidatorFactory()
+                .getValidator();
+
+        var violations = validator.validate(dto);
+        assertEquals(1, violations.size());
+        assertEquals("El precio de descuento no puede ser mayor al precio regular.",
+                violations.iterator().next().getMessage());
     }
 
     @Test

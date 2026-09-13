@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,10 +52,10 @@ class DefaultCategoriaServiceTest {
         when(categoriaRepository.findById(1)).thenReturn(Optional.of(cat1));
         when(categoriaRepository.findById(2)).thenReturn(Optional.of(cat2));
 
-        List<CategoriaOrdenDto> reorden = List.of(
+        List<CategoriaOrdenDto> reorden = new ArrayList<>(List.of(
                 new CategoriaOrdenDto(1, 2),
                 new CategoriaOrdenDto(2, 1)
-        );
+        ));
 
         categoriaService.cambiarOrdenCategorias(reorden);
 
@@ -65,10 +66,10 @@ class DefaultCategoriaServiceTest {
 
     @Test
     void cambiarOrdenCategorias_OrdenDuplicado_LanzaValidationException() {
-        List<CategoriaOrdenDto> reorden = List.of(
+        List<CategoriaOrdenDto> reorden = new ArrayList<>(List.of(
                 new CategoriaOrdenDto(1, 1),
                 new CategoriaOrdenDto(2, 1)
-        );
+        ));
 
         assertThrows(ValidationException.class, () -> categoriaService.cambiarOrdenCategorias(reorden));
     }
@@ -77,10 +78,10 @@ class DefaultCategoriaServiceTest {
     void cambiarOrdenCategorias_CantidadIncompleta_LanzaValidationException() {
         when(categoriaRepository.count()).thenReturn(3L);
 
-        List<CategoriaOrdenDto> reorden = List.of(
+        List<CategoriaOrdenDto> reorden = new ArrayList<>(List.of(
                 new CategoriaOrdenDto(1, 1),
                 new CategoriaOrdenDto(2, 2)
-        );
+        ));
 
         assertThrows(ValidationException.class, () -> categoriaService.cambiarOrdenCategorias(reorden));
     }

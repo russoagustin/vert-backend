@@ -3,6 +3,7 @@ package com.vert.catalogo.controller;
 import java.net.URI;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,7 +66,7 @@ public class SubCategoriaController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> crearSubCategoria(@RequestBody SubCategoriaDto subCategoriaDto) {
+    public ResponseEntity<Void> crearSubCategoria(@Valid @RequestBody SubCategoriaDto subCategoriaDto) {
         Integer newId = subCategoriaService.crearSubCategoria(subCategoriaDto);
 
         URI location = ServletUriComponentsBuilder
@@ -80,7 +81,7 @@ public class SubCategoriaController {
     @PutMapping("/{id}")
     public ResponseEntity<Void> modificarSubCategoria(
             @PathVariable Integer id,
-            @RequestBody SubCategoriaDto subCategoriaDto) {
+            @Valid @RequestBody SubCategoriaDto subCategoriaDto) {
         subCategoriaService.modificarSubCategoria(id, subCategoriaDto);
         return ResponseEntity.noContent().build();
     }
@@ -98,7 +99,7 @@ public class SubCategoriaController {
     @PatchMapping("/orden")
     public ResponseEntity<Void> cambiarOrdenSubCategorias(
             @RequestParam Integer idCategoria,
-            @RequestBody List<SubCategoriaOrdenDto> subcategorias) {
+            @RequestBody List<@Valid SubCategoriaOrdenDto> subcategorias) {
         subCategoriaService.cambiarOrdenSubCategorias(idCategoria, subcategorias);
         return ResponseEntity.noContent().build();
     }
@@ -106,7 +107,7 @@ public class SubCategoriaController {
     @PatchMapping("/categoria/{idCategoria}/orden")
     public ResponseEntity<Void> cambiarOrdenSubCategoriasPorCategoria(
             @PathVariable Integer idCategoria,
-            @RequestBody List<SubCategoriaOrdenDto> subcategorias) {
+            @RequestBody List<@Valid SubCategoriaOrdenDto> subcategorias) {
         subCategoriaService.cambiarOrdenSubCategorias(idCategoria, subcategorias);
         return ResponseEntity.noContent().build();
     }

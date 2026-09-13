@@ -56,16 +56,6 @@ public class DefaultSubCategoriaService implements SubCategoriaService {
 
     @Override
     public Integer crearSubCategoria(SubCategoriaDto subCat) {
-        if (subCat == null) {
-            throw new ValidationException("Los datos de la subcategoría no pueden ser nulos.");
-        }
-        if (subCat.idCategoria() == null) {
-            throw new ValidationException("El ID de la categoría no puede ser nulo.");
-        }
-        if (subCat.nombre() == null || subCat.nombre().trim().isEmpty()) {
-            throw new ValidationException("El nombre de la subcategoría no puede ser nulo ni estar vacío.");
-        }
-
         this.categoriaRepository.findById(subCat.idCategoria())
                 .orElseThrow(() -> new NotFoundException("Categoria no encontrada con id: " + subCat.idCategoria()));
 

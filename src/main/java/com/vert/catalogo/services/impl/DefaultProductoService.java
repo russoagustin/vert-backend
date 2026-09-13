@@ -115,26 +115,6 @@ public class DefaultProductoService implements ProductoService {
         if (imagen == null || imagen.isEmpty()) {
             throw new ValidationException("La imagen del producto es obligatoria.");
         }
-        if (productoDto == null) {
-            throw new ValidationException("Los datos del producto no pueden ser nulos.");
-        }
-        if (productoDto.idCategoria() == null) {
-            throw new ValidationException("El ID de la categoría no puede ser nulo.");
-        }
-        if (productoDto.idSubCategoria() == null) {
-            throw new ValidationException("El ID de la subcategoría no puede ser nulo.");
-        }
-        if (productoDto.nombre() == null || productoDto.nombre().trim().isEmpty()) {
-            throw new ValidationException("El nombre del producto no puede ser nulo ni estar vacío.");
-        }
-        if (productoDto.precio() == null || productoDto.precio().compareTo(BigDecimal.ZERO) < 0) {
-            throw new ValidationException("El precio del producto debe ser mayor o igual a 0.");
-        }
-        if (productoDto.precioDescuento() != null &&
-                (productoDto.precioDescuento().compareTo(BigDecimal.ZERO) < 0
-                        || productoDto.precioDescuento().compareTo(productoDto.precio()) > 0)) {
-            throw new ValidationException("El precio de descuento no puede ser negativo ni mayor al precio regular.");
-        }
 
         this.categoriaRepository.findById(productoDto.idCategoria())
                 .orElseThrow(() -> new NotFoundException("Categoria no encontrada con id: " + productoDto.idCategoria()));
@@ -160,9 +140,6 @@ public class DefaultProductoService implements ProductoService {
     public void modificarProducto(Integer id, ProductoDto productoDto, MultipartFile imagen) {
         if (id == null) {
             throw new ValidationException("El ID del producto no puede ser nulo.");
-        }
-        if (productoDto == null) {
-            throw new ValidationException("Los datos del producto no pueden ser nulos.");
         }
 
         Producto existing = this.productoRepository.findById(id)
@@ -200,21 +177,8 @@ public class DefaultProductoService implements ProductoService {
         }
 
         String nombre = productoDto.nombre() != null ? productoDto.nombre().trim() : existing.getNombre();
-        if (nombre == null || nombre.isEmpty()) {
-            throw new ValidationException("El nombre del producto no puede ser nulo ni estar vacío.");
-        }
-
         BigDecimal precio = productoDto.precio() != null ? productoDto.precio() : existing.getPrecio();
-        if (precio == null || precio.compareTo(BigDecimal.ZERO) < 0) {
-            throw new ValidationException("El precio del producto debe ser mayor o igual a 0.");
-        }
-
         BigDecimal precioDescuento = productoDto.precioDescuento();
-        if (precioDescuento != null &&
-                (precioDescuento.compareTo(BigDecimal.ZERO) < 0 || precioDescuento.compareTo(precio) > 0)) {
-            throw new ValidationException("El precio de descuento no puede ser negativo ni mayor al precio regular.");
-        }
-
         String descripcion = productoDto.descripcion();
         Integer cantidad = productoDto.cantidad();
 

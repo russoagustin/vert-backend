@@ -3,6 +3,7 @@ package com.vert.catalogo.controller;
 import java.net.URI;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +48,7 @@ public class CategoriaController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> crearCategoria(@RequestBody CategoriaDto categoriaDto) {
+    public ResponseEntity<Void> crearCategoria(@Valid @RequestBody CategoriaDto categoriaDto) {
         Integer newId = categoriaService.crearCategoria(categoriaDto);
         
         // Retorna 201 Created y el header Location con la URL del nuevo recurso
@@ -61,7 +62,7 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> modificarCategoria(@PathVariable Integer id, @RequestBody CategoriaDto categoriaDto) {
+    public ResponseEntity<Void> modificarCategoria(@PathVariable Integer id, @Valid @RequestBody CategoriaDto categoriaDto) {
         categoriaService.modificarCategoria(id, categoriaDto);
         return ResponseEntity.noContent().build(); // 204 No Content para actualizaciones exitosas
     }
@@ -73,7 +74,7 @@ public class CategoriaController {
     }
 
     @PatchMapping("/orden")
-    public ResponseEntity<Void> cambiarOrdenCategorias(@RequestBody List<CategoriaOrdenDto> categorias) {
+    public ResponseEntity<Void> cambiarOrdenCategorias(@RequestBody List<@Valid CategoriaOrdenDto> categorias) {
         categoriaService.cambiarOrdenCategorias(categorias);
         return ResponseEntity.noContent().build();
     }
