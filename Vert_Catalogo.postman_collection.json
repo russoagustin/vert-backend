@@ -2,10 +2,62 @@
 	"info": {
 		"_postman_id": "vert-catalogo-collection-id",
 		"name": "Vert Catálogo API",
-		"description": "Colección completa para pruebas de los endpoints de Categorías y SubCategorías del backend Vert.",
+		"description": "Colección completa para pruebas de los endpoints de Autenticación, Categorías, SubCategorías y Productos del backend Vert.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "Autenticación",
+			"item": [
+				{
+					"name": "Iniciar Sesión (Login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Si la cookie access_token está presente, extrae el token y lo guarda en la variable de colección 'token'",
+									"var cookieHeader = pm.response.headers.get(\"Set-Cookie\");",
+									"if (cookieHeader) {",
+									"    var match = cookieHeader.match(/access_token=([^;]+)/);",
+									"    if (match) {",
+									"        pm.collectionVariables.set(\"token\", match[1]);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Autentica al usuario mediante username y password. Si las credenciales son válidas, retorna 200 OK y establece una cookie HttpOnly 'access_token' con el JWT."
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "Categorías",
 			"item": [
@@ -803,6 +855,11 @@
 		{
 			"key": "producto_id",
 			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
 			"type": "string"
 		}
 	]
