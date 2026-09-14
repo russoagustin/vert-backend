@@ -1,8 +1,9 @@
 package com.vert.catalogo.services.impl;
 
 import java.math.BigDecimal;
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,21 +37,19 @@ public class DefaultProductoService implements ProductoService {
     }
 
     @Override
-    public List<ProductoDto> listarProductos(Integer idCategoria, Integer idSubCategoria) {
+    public Page<ProductoDto> listarProductos(Integer idCategoria, Integer idSubCategoria, Pageable pageable) {
         if (idCategoria != null && idSubCategoria != null) {
-            return this.listarPorCategoriaYSubCategoria(idCategoria, idSubCategoria);
+            return this.listarPorCategoriaYSubCategoria(idCategoria, idSubCategoria, pageable);
         } else if (idCategoria != null) {
-            return this.listarPorCategoria(idCategoria);
+            return this.listarPorCategoria(idCategoria, pageable);
         }
 
-        return this.productoRepository.findAll()
-                .stream()
-                .map(ProductoDto::fromEntity)
-                .toList();
+        return this.productoRepository.findAll(pageable)
+                .map(ProductoDto::fromEntity);
     }
 
     @Override
-    public List<ProductoDto> listarPorCategoria(Integer idCategoria) {
+    public Page<ProductoDto> listarPorCategoria(Integer idCategoria, Pageable pageable) {
         if (idCategoria == null) {
             throw new ValidationException("El ID de la categoría no puede ser nulo.");
         }
@@ -58,14 +57,13 @@ public class DefaultProductoService implements ProductoService {
         this.categoriaRepository.findById(idCategoria)
                 .orElseThrow(() -> new NotFoundException("Categoria no encontrada con id: " + idCategoria));
 
-        return this.productoRepository.findAllByCategoriaId(idCategoria)
-                .stream()
-                .map(ProductoDto::fromEntity)
-                .toList();
+        return this.productoRepository.findAllByCategoriaId(idCategoria, pageable)
+                .map(ProductoDto::fromEntity);
     }
 
     @Override
-    public List<ProductoDto> listarPorCategoriaYSubCategoria(Integer idCategoria, Integer idSubCategoria) {
+    public Page<ProductoDto> listarPorCategoriaYSubCategoria(Integer idCategoria, Integer idSubCategoria,
+            Pageable pageable) {
         if (idCategoria == null) {
             throw new ValidationException("El ID de la categoría no puede ser nulo.");
         }
@@ -80,10 +78,8 @@ public class DefaultProductoService implements ProductoService {
                 .orElseThrow(() -> new NotFoundException(
                         "SubCategoria no encontrada con id: " + idSubCategoria + " para la categoría: " + idCategoria));
 
-        return this.productoRepository.findAllBySubCategoriaIdAndCategoriaId(idSubCategoria, idCategoria)
-                .stream()
-                .map(ProductoDto::fromEntity)
-                .toList();
+        return this.productoRepository.findAllBySubCategoriaIdAndCategoriaId(idSubCategoria, idCategoria, pageable)
+                .map(ProductoDto::fromEntity);
     }
 
     @Override
@@ -117,7 +113,8 @@ public class DefaultProductoService implements ProductoService {
         }
 
         this.categoriaRepository.findById(productoDto.idCategoria())
-                .orElseThrow(() -> new NotFoundException("Categoria no encontrada con id: " + productoDto.idCategoria()));
+                .orElseThrow(
+                        () -> new NotFoundException("Categoria no encontrada con id: " + productoDto.idCategoria()));
 
         this.subCategoriaRepository.findByIdAndCategoriaId(productoDto.idSubCategoria(), productoDto.idCategoria())
                 .orElseThrow(() -> new NotFoundException("SubCategoria no encontrada con id: "
@@ -148,7 +145,8 @@ public class DefaultProductoService implements ProductoService {
         Integer resolvedCatId = productoDto.idCategoria();
         Integer resolvedSubCatId = productoDto.idSubCategoria();
 
-        if (resolvedCatId == null && existing.getSubCategoria() != null && existing.getSubCategoria().getCategoria() != null) {
+        if (resolvedCatId == null && existing.getSubCategoria() != null
+                && existing.getSubCategoria().getCategoria() != null) {
             resolvedCatId = existing.getSubCategoria().getCategoria().getId();
         }
         if (resolvedSubCatId == null && existing.getSubCategoria() != null) {

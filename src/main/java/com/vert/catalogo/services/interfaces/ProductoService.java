@@ -1,18 +1,18 @@
 package com.vert.catalogo.services.interfaces;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.vert.catalogo.dto.ProductoDto;
 
 public interface ProductoService {
 
-    List<ProductoDto> listarProductos(Integer idCategoria, Integer idSubCategoria);
+    Page<ProductoDto> listarProductos(Integer idCategoria, Integer idSubCategoria, Pageable pageable);
 
-    List<ProductoDto> listarPorCategoria(Integer idCategoria);
+    Page<ProductoDto> listarPorCategoria(Integer idCategoria, Pageable pageable);
 
-    List<ProductoDto> listarPorCategoriaYSubCategoria(Integer idCategoria, Integer idSubCategoria);
+    Page<ProductoDto> listarPorCategoriaYSubCategoria(Integer idCategoria, Integer idSubCategoria, Pageable pageable);
 
     ProductoDto buscarPorId(Integer id);
 

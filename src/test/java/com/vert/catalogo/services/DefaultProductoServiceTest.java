@@ -18,6 +18,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.vert.catalogo.dto.ProductoDto;
@@ -274,35 +278,68 @@ class DefaultProductoServiceTest {
 
     @Test
     void listarProductos_SinFiltros() {
-        when(productoRepository.findAll()).thenReturn(List.of(producto));
+        Pageable pageable = PageRequest.of(0, 14);
+        Page<Producto> page = new PageImpl<>(List.of(producto), pageable, 1);
+        when(productoRepository.findAll(pageable)).thenReturn(page);
 
-        List<ProductoDto> resultado = productoService.listarProductos(null, null);
+        Page<ProductoDto> resultado = productoService.listarProductos(null, null, pageable);
 
-        assertEquals(1, resultado.size());
-        assertEquals("Coca Cola 1.5L", resultado.get(0).nombre());
-        verify(productoRepository).findAll();
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getTotalElements());
+        assertEquals(1, resultado.getContent().size());
+        assertEquals("Coca Cola 1.5L", resultado.getContent().get(0).nombre());
+        verify(productoRepository).findAll(pageable);
     }
 
     @Test
     void listarProductos_FiltradoPorCategoria() {
+        Pageable pageable = PageRequest.of(0, 14);
+        Page<Producto> page = new PageImpl<>(List.of(producto), pageable, 1);
         when(categoriaRepository.findById(1)).thenReturn(Optional.of(categoria));
-        when(productoRepository.findAllByCategoriaId(1)).thenReturn(List.of(producto));
+        when(productoRepository.findAllByCategoriaId(1, pageable)).thenReturn(page);
 
-        List<ProductoDto> resultado = productoService.listarProductos(1, null);
+        Page<ProductoDto> resultado = productoService.listarProductos(1, null, pageable);
 
-        assertEquals(1, resultado.size());
-        verify(productoRepository).findAllByCategoriaId(1);
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getTotalElements());
+        assertEquals(1, resultado.getContent().size());
+        assertEquals("Coca Cola 1.5L", resultado.getContent().get(0).nombre());
+        verify(productoRepository).findAllByCategoriaId(1, pageable);
     }
 
     @Test
     void listarProductos_FiltradoPorCategoriaYSubCategoria() {
+        Pageable pageable = PageRequest.of(0, 14);
+        Page<Producto> page = new PageImpl<>(List.of(producto), pageable, 1);
         when(categoriaRepository.findById(1)).thenReturn(Optional.of(categoria));
         when(subCategoriaRepository.findByIdAndCategoriaId(10, 1)).thenReturn(Optional.of(subCategoria));
-        when(productoRepository.findAllBySubCategoriaIdAndCategoriaId(10, 1)).thenReturn(List.of(producto));
+        when(productoRepository.findAllBySubCategoriaIdAndCategoriaId(10, 1, pageable)).thenReturn(page);
 
-        List<ProductoDto> resultado = productoService.listarProductos(1, 10);
+        Page<ProductoDto> resultado = productoService.listarProductos(1, 10, pageable);
 
-        assertEquals(1, resultado.size());
-        verify(productoRepository).findAllBySubCategoriaIdAndCategoriaId(10, 1);
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getTotalElements());
+        assertEquals(1, resultado.getContent().size());
+        assertEquals("Coca Cola 1.5L", resultado.getContent().get(0).nombre());
+        verify(productoRepository).findAllBySubCategoriaIdAndCategoriaId(10, 1, pageable);
+    }
+
+    @Test
+    void listarPorCategoria_CategoriaNoExiste_LanzaNotFoundException() {
+        Pageable pageable = PageRequest.of(0, 14);
+        when(categoriaRepository.findById(999)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> productoService.listarPorCategoria(999, pageable));
+        verify(productoRepository, never()).findAllByCategoriaId(any(), any());
+    }
+
+    @Test
+    void listarPorCategoriaYSubCategoria_SubCategoriaNoExiste_LanzaNotFoundException() {
+        Pageable pageable = PageRequest.of(0, 14);
+        when(categoriaRepository.findById(1)).thenReturn(Optional.of(categoria));
+        when(subCategoriaRepository.findByIdAndCategoriaId(999, 1)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> productoService.listarPorCategoriaYSubCategoria(1, 999, pageable));
+        verify(productoRepository, never()).findAllBySubCategoriaIdAndCategoriaId(any(), any(), any());
     }
 }

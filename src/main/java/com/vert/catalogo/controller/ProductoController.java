@@ -1,9 +1,12 @@
 package com.vert.catalogo.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,22 +36,26 @@ public class ProductoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductoDto>> listarProductos(
+    public ResponseEntity<Page<ProductoDto>> listarProductos(
             @RequestParam(required = false) Integer idCategoria,
-            @RequestParam(required = false) Integer idSubCategoria) {
-        return ResponseEntity.ok(this.productoService.listarProductos(idCategoria, idSubCategoria));
+            @RequestParam(required = false) Integer idSubCategoria,
+            @PageableDefault(size = 14, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(this.productoService.listarProductos(idCategoria, idSubCategoria, pageable));
     }
 
     @GetMapping("/categoria/{idCategoria}")
-    public ResponseEntity<List<ProductoDto>> listarPorCategoria(@PathVariable Integer idCategoria) {
-        return ResponseEntity.ok(this.productoService.listarPorCategoria(idCategoria));
+    public ResponseEntity<Page<ProductoDto>> listarPorCategoria(
+            @PathVariable Integer idCategoria,
+            @PageableDefault(size = 14, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(this.productoService.listarPorCategoria(idCategoria, pageable));
     }
 
     @GetMapping("/categoria/{idCategoria}/subcategoria/{idSubCategoria}")
-    public ResponseEntity<List<ProductoDto>> listarPorCategoriaYSubCategoria(
+    public ResponseEntity<Page<ProductoDto>> listarPorCategoriaYSubCategoria(
             @PathVariable Integer idCategoria,
-            @PathVariable Integer idSubCategoria) {
-        return ResponseEntity.ok(this.productoService.listarPorCategoriaYSubCategoria(idCategoria, idSubCategoria));
+            @PathVariable Integer idSubCategoria,
+            @PageableDefault(size = 14, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(this.productoService.listarPorCategoriaYSubCategoria(idCategoria, idSubCategoria, pageable));
     }
 
     @GetMapping("/{id}")
