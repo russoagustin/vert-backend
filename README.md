@@ -152,6 +152,8 @@ El servidor iniciará en: `http://localhost:8080`.
 
 ## 📖 Referencia de la API
 
+> 📘 **Documentación para Frontend:** Puedes consultar la especificación técnica completa con modelos de datos, TypeScript interfaces, paginación y snippets de integración en [`API_FRONTEND_SPECIFICATION.md`](./API_FRONTEND_SPECIFICATION.md).
+
 A continuación se detallan los endpoints disponibles divididos por módulo, con la estructura exacta de los **Body de entrada (Request Body)**, validaciones de campos y ejemplos de respuesta.
 
 > [!IMPORTANT]
