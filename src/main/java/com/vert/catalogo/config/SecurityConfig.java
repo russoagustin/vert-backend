@@ -44,22 +44,27 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/subcategorias", "/api/subcategorias/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/productos", "/api/productos/**").permitAll()
 
-                        // 3. Endpoints de gestión (Creaciones, modificaciones y borrado requieren autenticación)
+                        // 3. Endpoints de gestión (Creaciones, modificaciones y borrado requieren
+                        // autenticación)
                         .requestMatchers(HttpMethod.POST, "/api/categorias", "/api/categorias/**",
-                                                           "/api/subcategorias", "/api/subcategorias/**",
-                                                           "/api/productos", "/api/productos/**").authenticated()
+                                "/api/subcategorias", "/api/subcategorias/**",
+                                "/api/productos", "/api/productos/**")
+                        .authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/categorias/**",
-                                                         "/api/subcategorias/**",
-                                                         "/api/productos/**").authenticated()
+                                "/api/subcategorias/**",
+                                "/api/productos/**")
+                        .authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/api/categorias/**",
-                                                           "/api/subcategorias/**",
-                                                           "/api/productos/**").authenticated()
+                                "/api/subcategorias/**",
+                                "/api/productos/**")
+                        .authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/categorias/**",
-                                                            "/api/subcategorias/**",
-                                                            "/api/productos/**").authenticated()
+                                "/api/subcategorias/**",
+                                "/api/productos/**")
+                        .authenticated()
 
                         // 4. Cualquier otra petición requiere autenticación
-                        .anyRequest().authenticated())
+                        .anyRequest().denyAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
                 .httpBasic(basic -> basic.disable())
